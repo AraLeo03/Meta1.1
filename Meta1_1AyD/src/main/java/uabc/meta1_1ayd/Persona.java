@@ -13,13 +13,12 @@ import java.util.ArrayList;
 public class Persona {
     private String id;
     private String nombre;
-    private String direccion;
     private ArrayList<Telefono> telefonos = new ArrayList<>();
+    private ArrayList<Direccion> direcciones = new ArrayList<>();
 
-    public Persona(String id, String nombre, String direccion) {
+    public Persona(String id, String nombre) {
         this.id = id;
         this.nombre = nombre;
-        this.direccion = direccion;
     }
 
     public String getId() {
@@ -38,14 +37,6 @@ public class Persona {
         this.nombre = nombre;
     }
 
-    public String getDireccion() {
-        return direccion;
-    }
-
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
-    }
-
     public ArrayList<Telefono> getTelefonos() {
         return telefonos;
     }
@@ -54,6 +45,11 @@ public class Persona {
         this.telefonos = telefonos;
     }
 
-    
-    
+    public ArrayList<Direccion> getDirecciones() {
+        return direcciones;
+    }
+
+    public void setDirecciones(ArrayList<Direccion> direcciones) {
+        this.direcciones = direcciones;
+    }
 }

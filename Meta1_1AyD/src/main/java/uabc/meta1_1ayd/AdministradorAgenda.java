@@ -32,37 +32,31 @@ public class AdministradorAgenda {
         PreparedStatement pstmt = null;
 
         try {
-            // Registrar el driver
             Class.forName("org.mariadb.jdbc.Driver");
-
-            // Conexión a la base de datos
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
 
-            // Sentencia SQL para insertar persona
-            String sql = "INSERT INTO Personas (nombre, direccion) VALUES (?, ?)";
+            // SOLO insertar nombre, ya que no hay columna direccion
+            String sql = "INSERT INTO Personas (nombre) VALUES (?)";
 
-            // Preparar la consulta
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, nombre);
-            pstmt.setString(2, direccion);
+            // pstmt.setString(2, direccion); // ← Eliminar esta línea
 
-            // Ejecutar la inserción
             int filasAfectadas = pstmt.executeUpdate();
 
             if (filasAfectadas > 0) {
-                
-                //System.out.println("Persona agregada correctamente: " + nombre);
+                return 1;
             } else {
                 return 0;
-                //System.out.println("No se pudo agregar la persona.");
             }
 
         } catch (SQLException se) {
             se.printStackTrace();
+            return 0;
         } catch (Exception e) {
             e.printStackTrace();
+            return 0;
         } finally {
-            // Cerrar recursos
             try {
                 if (pstmt != null) pstmt.close();
                 if (conn != null) conn.close();
@@ -70,7 +64,6 @@ public class AdministradorAgenda {
                 se.printStackTrace();
             }
         }
-        return 1;
     }
     public static int bajaPersona(int personaId){
         Connection conn = null;
@@ -78,10 +71,8 @@ public class AdministradorAgenda {
         PreparedStatement pstmtPersona = null;
 
         try {
-            // Registrar el driver
             Class.forName("org.mariadb.jdbc.Driver");
 
-            // Conexión
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
             
             String sqlPersona = "DELETE FROM Personas WHERE id = ?";
@@ -118,26 +109,26 @@ public class AdministradorAgenda {
         PreparedStatement pstmt = null;
 
         try {
-            // 1. Registrar el driver
+            
             Class.forName("org.mariadb.jdbc.Driver");
 
-            // 2. Establecer la conexión
+            
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
 
-            // 3. Preparar la sentencia SQL
+           
             String sql = "UPDATE Personas SET nombre = ?, direccion = ? WHERE id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, nuevoNombre);
             pstmt.setString(2, nuevaDireccion);
             pstmt.setInt(3, Integer.parseInt(idPersona));
 
-            // 4. Ejecutar actualización
+            
             int filasAfectadas = pstmt.executeUpdate();
 
             if (filasAfectadas > 0) {
-                return 1; // actualización exitosa
+                return 1;
             } else {
-                return 0; // no se encontró la persona
+                return 0;
             }
 
         } catch (SQLException se) {
@@ -160,25 +151,24 @@ public class AdministradorAgenda {
         PreparedStatement pstmt = null;
 
         try {
-            // 1. Registrar el driver
             Class.forName("org.mariadb.jdbc.Driver");
 
-            // 2. Establecer la conexión
+            
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
 
-            // 3. Preparar la sentencia SQL
+            
             String sql = "UPDATE Telefonos SET telefono = ? WHERE id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, nuevoNumero);
             pstmt.setInt(2, Integer.parseInt(idTelefono));
 
-            // 4. Ejecutar actualización
+            
             int filasAfectadas = pstmt.executeUpdate();
 
             if (filasAfectadas > 0) {
-                return 1; // actualización exitosa
+                return 1;
             } else {
-                return 0; // no se encontró el teléfono
+                return 0; 
             }
 
         } catch (SQLException se) {
@@ -263,11 +253,10 @@ public class AdministradorAgenda {
             while (rs.next()) {
                 String id = rs.getString("id");
                 String nombre = rs.getString("nombre");
-                String direccion = rs.getString("direccion");
 
-                Persona p = new Persona(id, nombre, direccion);
+                Persona p = new Persona(id, nombre);
 
-                // cargar teléfonos
+                // Cargar teléfonos
                 Statement stmtTel = conn.createStatement();
                 ResultSet rsTel = stmtTel.executeQuery(
                     "SELECT id, telefono FROM Telefonos WHERE personaId = " + id);
@@ -279,6 +268,21 @@ public class AdministradorAgenda {
                 }
                 rsTel.close();
                 stmtTel.close();
+
+                // Cargar direcciones (usando la tabla intermedia)
+                Statement stmtDir = conn.createStatement();
+                ResultSet rsDir = stmtDir.executeQuery(
+                    "SELECT d.id, d.calle FROM Direcciones d " +
+                    "INNER JOIN persona_direccion pd ON d.id = pd.direccionId " +
+                    "WHERE pd.personaId = " + id);
+
+                while (rsDir.next()) {
+                    String idDir = rsDir.getString("id");
+                    String calle = rsDir.getString("calle");
+                    p.getDirecciones().add(new Direccion(idDir, calle));
+                }
+                rsDir.close();
+                stmtDir.close();
 
                 personas.add(p);
             }
@@ -294,120 +298,76 @@ public class AdministradorAgenda {
         }
         return personas;
     }
-    
-//    public static void mostrarTablas(){
-//        Connection conn = null;
-//        Statement stmt = null;
-//        ResultSet rs = null;
-//
-//        try {
-//            // 1. Registrar el driver JDBC
-//            Class.forName("org.mariadb.jdbc.Driver");
-//
-//            // 2. Establecer la conexión
-//            System.out.println("Conectando a la base de datos...");
-//            conn = DriverManager.getConnection(URL, USER, PASSWORD);
-//
-//            // 3. Consultar la tabla Personas
-//            System.out.println("\n=== LISTADO DE PERSONAS ===");
-//            stmt = conn.createStatement();
-//            rs = stmt.executeQuery("SELECT * FROM Personas");
-//            
-//            while (rs.next()) {
-//                int id = rs.getInt("id");
-//                String nombre = rs.getString("nombre");
-//                String direccion = rs.getString("direccion");
-//                
-//                System.out.println("ID: " + id + ", Nombre: " + nombre + ", Dirección: " + direccion);
-//                
-//                // 4. Consultar los teléfonos de cada persona
-//                System.out.println("  Teléfonos:");
-//                Statement stmtTelefonos = conn.createStatement();
-//                ResultSet rsTelefonos = stmtTelefonos.executeQuery(
-//                    "SELECT telefono FROM Telefonos WHERE personaId = " + id);
-//                
-//                while (rsTelefonos.next()) {
-//                    System.out.println("    - " + rsTelefonos.getString("telefono"));
-//                }
-//                rsTelefonos.close();
-//                stmtTelefonos.close();
-//            }
-//
-//        } catch (SQLException se) {
-//            se.printStackTrace();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        } finally {
-//            // 5. Cerrar recursos
-//            try {
-//                if (rs != null) rs.close();
-//                if (stmt != null) stmt.close();
-//                if (conn != null) conn.close();
-//            } catch (SQLException se) {
-//                se.printStackTrace();
-//            }
-//        }
-//        System.out.println("\nConexión cerrada.");
-//    }
-//    
-//    public static String mostrarTablasS() {
-//        Connection conn = null;
-//        Statement stmt = null;
-//        ResultSet rs = null;
-//        StringBuilder sb = new StringBuilder();
-//
-//        try {
-//            // 1. Registrar el driver JDBC
-//            Class.forName("org.mariadb.jdbc.Driver");
-//
-//            // 2. Establecer la conexión
-//            sb.append("Conectando a la base de datos...\n");
-//            conn = DriverManager.getConnection(URL, USER, PASSWORD);
-//
-//            // 3. Consultar la tabla Personas
-//            sb.append("\n=== LISTADO DE PERSONAS ===\n");
-//            stmt = conn.createStatement();
-//            rs = stmt.executeQuery("SELECT * FROM Personas");
-//
-//            while (rs.next()) {
-//                int id = rs.getInt("id");
-//                String nombre = rs.getString("nombre");
-//                String direccion = rs.getString("direccion");
-//
-//                sb.append("ID: ").append(id)
-//                  .append(", Nombre: ").append(nombre)
-//                  .append(", Dirección: ").append(direccion).append("\n");
-//
-//                // 4. Consultar los teléfonos de cada persona
-//                sb.append("  Teléfonos:\n");
-//                Statement stmtTelefonos = conn.createStatement();
-//                ResultSet rsTelefonos = stmtTelefonos.executeQuery(
-//                    "SELECT telefono FROM Telefonos WHERE personaId = " + id);
-//
-//                while (rsTelefonos.next()) {
-//                    sb.append("    - ").append(rsTelefonos.getString("telefono")).append("\n");
-//                }
-//                rsTelefonos.close();
-//                stmtTelefonos.close();
-//            }
-//
-//        } catch (SQLException se) {
-//            se.printStackTrace();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        } finally {
-//            // 5. Cerrar recursos
-//            try {
-//                if (rs != null) rs.close();
-//                if (stmt != null) stmt.close();
-//                if (conn != null) conn.close();
-//            } catch (SQLException se) {
-//                se.printStackTrace();
-//            }
-//        }
-//        //sb.append("\nConexión cerrada.\n");
-//        return sb.toString();
-//    }  
-    
+    public static int agregarDireccion(String personaId, String calle) {
+        Connection conn = null;
+        PreparedStatement pstmtDir = null;
+        PreparedStatement pstmtRel = null;
+        ResultSet rs = null;
 
+        try {
+            Class.forName("org.mariadb.jdbc.Driver");
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+
+            String sqlDir = "INSERT INTO Direcciones (calle) VALUES (?)";
+            pstmtDir = conn.prepareStatement(sqlDir, Statement.RETURN_GENERATED_KEYS);
+            pstmtDir.setString(1, calle);
+            pstmtDir.executeUpdate();
+
+            rs = pstmtDir.getGeneratedKeys();
+            int direccionId = 0;
+            if (rs.next()) {
+                direccionId = rs.getInt(1);
+            }
+
+            String sqlRel = "INSERT INTO persona_direccion (personaId, direccionId) VALUES (?, ?)";
+            pstmtRel = conn.prepareStatement(sqlRel);
+            pstmtRel.setInt(1, Integer.parseInt(personaId));
+            pstmtRel.setInt(2, direccionId);
+
+            int filas = pstmtRel.executeUpdate();
+            return filas > 0 ? 1 : 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pstmtDir != null) pstmtDir.close();
+                if (pstmtRel != null) pstmtRel.close();
+                if (conn != null) conn.close();
+            } catch (SQLException se) { se.printStackTrace(); }
+        }
+    }
+
+    public static int bajaDireccion(String idDireccion) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            Class.forName("org.mariadb.jdbc.Driver");
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+
+            String sqlRel = "DELETE FROM persona_direccion WHERE direccionId = ?";
+            pstmt = conn.prepareStatement(sqlRel);
+            pstmt.setString(1, idDireccion);
+            pstmt.executeUpdate();
+
+            String sqlDir = "DELETE FROM Direcciones WHERE id = ?";
+            pstmt = conn.prepareStatement(sqlDir);
+            pstmt.setString(1, idDireccion);
+
+            int filasAfectadas = pstmt.executeUpdate();
+            return filasAfectadas > 0 ? 1 : 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        } finally {
+            try {
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException se) { se.printStackTrace(); }
+        }
+    }
 }

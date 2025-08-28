@@ -18,33 +18,38 @@ public class AdminAgendaGUI extends javax.swing.JFrame {
      */
     public AdminAgendaGUI() {
         initComponents();
+        jTable1.getColumnModel().getColumn(0).setPreferredWidth(30); 
+        jTable1.getColumnModel().getColumn(1).setPreferredWidth(270);
+        jTable3.getColumnModel().getColumn(0).setPreferredWidth(30); 
+        jTable3.getColumnModel().getColumn(1).setPreferredWidth(230);
+        jTable2.getColumnModel().getColumn(0).setPreferredWidth(30); 
+        jTable2.getColumnModel().getColumn(1).setPreferredWidth(360);
+        
         jTable1.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 int fila = jTable1.getSelectedRow();
-                if (fila != -1) { // hay fila seleccionada
+                if (fila != -1) {
                     String idPersona = jTable1.getValueAt(fila, 0).toString();
                     String nombre = jTable1.getValueAt(fila, 1).toString();
-                    String direccion = jTable1.getValueAt(fila, 2).toString();
 
-                    // 🔹 Cargar en los JTextField
-                    NombrePersona.setText(nombre);
-                    DireccionPersona.setText(direccion);
+                    Nombre.setText(nombre);
+                    Direccion.setText(""); // Limpiar el campo de dirección
 
-                    // 🔹 Cargar teléfonos
                     cargarTelefonos(idPersona);
-                }
-            }
-        });   
-        jTable2.getSelectionModel().addListSelectionListener(e -> {
-            if(!e.getValueIsAdjusting()) {
-                int fila = jTable2.getSelectedRow();
-                if(fila != -1) {
-                    String numero = jTable2.getValueAt(fila, 1).toString();
-                    NombrePersona1.setText(numero);
+                    cargarDirecciones(idPersona);
                 }
             }
         }); 
-        ModificarTelefono.addActionListener(e -> {
+        jTable3.getSelectionModel().addListSelectionListener(e -> {
+            if(!e.getValueIsAdjusting()) {
+                int fila = jTable3.getSelectedRow();
+                if(fila != -1) {
+                    String numero = jTable3.getValueAt(fila, 1).toString();
+                    Telefono.setText(numero);
+                }
+            }
+        }); 
+        Modificar.addActionListener(e -> {
             int filaPersona = jTable1.getSelectedRow();
             if(filaPersona == -1) {
                 Estado.setText("Seleccione primero una persona.");
@@ -52,16 +57,15 @@ public class AdminAgendaGUI extends javax.swing.JFrame {
             }
 
             String idPersona = jTable1.getValueAt(filaPersona, 0).toString();
-            String nuevoNombre = NombrePersona.getText();
-            String nuevaDireccion = DireccionPersona.getText();
+            String nuevoNombre = Nombre.getText();
+            String nuevaDireccion = Direccion.getText();
 
-            // Modificar persona si cambió algo
             AdministradorAgenda.modificarPersona(idPersona, nuevoNombre, nuevaDireccion);
 
-            int filaTelefono = jTable2.getSelectedRow();
+            int filaTelefono = jTable3.getSelectedRow();
             if(filaTelefono != -1) {
-                String idTelefono = jTable2.getValueAt(filaTelefono, 0).toString(); // columna 0 = idTelefono
-                String nuevoNumero = NombrePersona1.getText();
+                String idTelefono = jTable3.getValueAt(filaTelefono, 0).toString(); // columna 0 = idTelefono
+                String nuevoNumero = Telefono.getText();
                 AdministradorAgenda.modificarTelefono(idTelefono, nuevoNumero);
             }
 
@@ -86,16 +90,20 @@ public class AdminAgendaGUI extends javax.swing.JFrame {
         Estado = new javax.swing.JTextField();
         AltaPersona = new javax.swing.JButton();
         BajaPersona = new javax.swing.JButton();
-        ModificarTelefono = new javax.swing.JButton();
-        NombrePersona = new javax.swing.JTextField();
-        DireccionPersona = new javax.swing.JTextField();
+        Modificar = new javax.swing.JButton();
+        Nombre = new javax.swing.JTextField();
+        Direccion = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jScrollPane1 = new javax.swing.JScrollPane();
+        jTable3 = new javax.swing.JTable();
+        Telefono = new javax.swing.JTextField();
+        AgregarTelefono = new javax.swing.JButton();
+        QuitarTelefono = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
-        NombrePersona1 = new javax.swing.JTextField();
-        AgregarTelefono1 = new javax.swing.JButton();
-        AgregarTelefono2 = new javax.swing.JButton();
+        AgregarCalle = new javax.swing.JButton();
+        QuitarCalle = new javax.swing.JButton();
 
         jButton3.setText("jButton3");
 
@@ -131,64 +139,64 @@ public class AdminAgendaGUI extends javax.swing.JFrame {
             }
         });
 
-        ModificarTelefono.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        ModificarTelefono.setText("MODIFICAR");
-        ModificarTelefono.addActionListener(new java.awt.event.ActionListener() {
+        Modificar.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        Modificar.setText("MODIFICAR");
+        Modificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ModificarTelefonoActionPerformed(evt);
+                ModificarActionPerformed(evt);
             }
         });
 
-        NombrePersona.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        NombrePersona.setBorder(javax.swing.BorderFactory.createTitledBorder("Nombre"));
-        NombrePersona.addActionListener(new java.awt.event.ActionListener() {
+        Nombre.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        Nombre.setBorder(javax.swing.BorderFactory.createTitledBorder("Nombre"));
+        Nombre.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                NombrePersonaActionPerformed(evt);
+                NombreActionPerformed(evt);
             }
         });
 
-        DireccionPersona.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        DireccionPersona.setBorder(javax.swing.BorderFactory.createTitledBorder("Direccion"));
-        DireccionPersona.addActionListener(new java.awt.event.ActionListener() {
+        Direccion.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        Direccion.setBorder(javax.swing.BorderFactory.createTitledBorder("Direccion"));
+        Direccion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                DireccionPersonaActionPerformed(evt);
+                DireccionActionPerformed(evt);
             }
         });
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
             },
             new String [] {
-                "Id", "Nombre", "Direccion"
+                "Id", "Nombre"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false
+                false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -201,10 +209,9 @@ public class AdminAgendaGUI extends javax.swing.JFrame {
         if (jTable1.getColumnModel().getColumnCount() > 0) {
             jTable1.getColumnModel().getColumn(0).setResizable(false);
             jTable1.getColumnModel().getColumn(1).setResizable(false);
-            jTable1.getColumnModel().getColumn(2).setResizable(false);
         }
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        jTable3.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null},
                 {null, null},
@@ -251,35 +258,99 @@ public class AdminAgendaGUI extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        jTable3.setShowGrid(true);
+        jTable3.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(jTable3);
+        if (jTable3.getColumnModel().getColumnCount() > 0) {
+            jTable3.getColumnModel().getColumn(0).setResizable(false);
+            jTable3.getColumnModel().getColumn(1).setResizable(false);
+        }
+
+        Telefono.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        Telefono.setBorder(javax.swing.BorderFactory.createTitledBorder("Telefonos"));
+        Telefono.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TelefonoActionPerformed(evt);
+            }
+        });
+
+        AgregarTelefono.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        AgregarTelefono.setText("AGREGAR TEL");
+        AgregarTelefono.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AgregarTelefonoActionPerformed(evt);
+            }
+        });
+
+        QuitarTelefono.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        QuitarTelefono.setText("QUITAR TEL");
+        QuitarTelefono.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                QuitarTelefonoActionPerformed(evt);
+            }
+        });
+
+        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
+            },
+            new String [] {
+                "IdCalle", "Direccion"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jTable2.setShowGrid(true);
         jTable2.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(jTable2);
+        jScrollPane3.setViewportView(jTable2);
         if (jTable2.getColumnModel().getColumnCount() > 0) {
             jTable2.getColumnModel().getColumn(0).setResizable(false);
             jTable2.getColumnModel().getColumn(1).setResizable(false);
         }
 
-        NombrePersona1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        NombrePersona1.setBorder(javax.swing.BorderFactory.createTitledBorder("Telefonos"));
-        NombrePersona1.addActionListener(new java.awt.event.ActionListener() {
+        AgregarCalle.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        AgregarCalle.setText("AGREGAR CALLE");
+        AgregarCalle.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                NombrePersona1ActionPerformed(evt);
+                AgregarCalleActionPerformed(evt);
             }
         });
 
-        AgregarTelefono1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        AgregarTelefono1.setText("AGREGAR TEL");
-        AgregarTelefono1.addActionListener(new java.awt.event.ActionListener() {
+        QuitarCalle.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        QuitarCalle.setText("QUITAR CALLE");
+        QuitarCalle.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                AgregarTelefono1ActionPerformed(evt);
-            }
-        });
-
-        AgregarTelefono2.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        AgregarTelefono2.setText("QUITAR TEL");
-        AgregarTelefono2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                AgregarTelefono2ActionPerformed(evt);
+                QuitarCalleActionPerformed(evt);
             }
         });
 
@@ -291,91 +362,103 @@ public class AdminAgendaGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 390, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(DireccionPersona, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE)
-                            .addComponent(NombrePersona, javax.swing.GroupLayout.Alignment.LEADING))
+                            .addComponent(Direccion, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE)
+                            .addComponent(Nombre, javax.swing.GroupLayout.Alignment.LEADING))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(NombrePersona1)
+                            .addComponent(Telefono)
                             .addComponent(Estado))
                         .addGap(10, 10, 10))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(Titulo)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(33, 33, 33)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(BajaPersona)
                             .addComponent(AltaPersona))
-                        .addGap(18, 18, 18)
-                        .addComponent(ModificarTelefono)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(Modificar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(AgregarCalle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(QuitarCalle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(AgregarTelefono1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(AgregarTelefono2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(AgregarTelefono, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(QuitarTelefono, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(19, 19, 19))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(Titulo)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(24, 24, 24)
-                                .addComponent(ModificarTelefono)))
-                        .addGap(40, 40, 40))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(AgregarTelefono1)
-                            .addComponent(AltaPersona))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(AgregarTelefono2)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(Titulo)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(AgregarTelefono)
+                                .addComponent(AgregarCalle))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(QuitarTelefono)
+                                .addComponent(QuitarCalle))))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(AltaPersona)
+                            .addGap(7, 7, 7)
                             .addComponent(BajaPersona))
-                        .addGap(18, 18, 18)))
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(18, 18, 18)
+                            .addComponent(Modificar)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(NombrePersona, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(NombrePersona1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Telefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(DireccionPersona, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Direccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(Estado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void DireccionPersonaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DireccionPersonaActionPerformed
+    private void DireccionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DireccionActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_DireccionPersonaActionPerformed
+    }//GEN-LAST:event_DireccionActionPerformed
 
-    private void NombrePersonaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NombrePersonaActionPerformed
+    private void NombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NombreActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_NombrePersonaActionPerformed
+    }//GEN-LAST:event_NombreActionPerformed
 
     private void AltaPersonaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AltaPersonaActionPerformed
-        String nombre = NombrePersona.getText();
-        String direccion = DireccionPersona.getText();
-        if(nombre.isEmpty() || direccion.isEmpty()){
-            Estado.setText("Agregue nombre y direccion.");
+        String nombre = Nombre.getText();
+
+        if(nombre.isEmpty()){
+            Estado.setText("Agregue un nombre.");
             return;
         }
-        
-        int res = AdministradorAgenda.altaPersona(nombre, direccion);
+
+        int res = AdministradorAgenda.altaPersona(nombre, ""); // Segundo parámetro vacío
         if(res==1){
             Estado.setText("Persona agregada correctamente: " + nombre);
             cargarTablas();
+            Nombre.setText(""); // Limpiar campo
         }else{
             Estado.setText("No se pudo agregar la persona.");
         }
@@ -388,21 +471,19 @@ public class AdminAgendaGUI extends javax.swing.JFrame {
             return;
         }
 
-        // Obtener ID de la persona
         int idPersona = Integer.parseInt(jTable1.getValueAt(fila, 0).toString());
 
-        // Llamar al método de baja
         int res = AdministradorAgenda.bajaPersona(idPersona);
 
         if (res == 1) {
             Estado.setText("Persona eliminada correctamente.");
-            cargarTablas(); // refrescar tabla de personas
-            jTable2.setModel(new javax.swing.table.DefaultTableModel(
+            cargarTablas(); 
+            jTable3.setModel(new javax.swing.table.DefaultTableModel(
                 new Object [][] {},
-                new String [] {"Id Tel", "Número"} // solo dos columnas
+                new String [] {"Id Tel", "Número"} 
             ));
-            NombrePersona.setText(""); // limpiar JTextField
-            DireccionPersona.setText("");
+            Nombre.setText("");
+            Direccion.setText("");
         } else {
             Estado.setText("No se pudo eliminar la persona.");
         }
@@ -413,11 +494,11 @@ public class AdminAgendaGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_EstadoActionPerformed
 
-    private void NombrePersona1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NombrePersona1ActionPerformed
+    private void TelefonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TelefonoActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_NombrePersona1ActionPerformed
+    }//GEN-LAST:event_TelefonoActionPerformed
 
-    private void AgregarTelefono1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AgregarTelefono1ActionPerformed
+    private void AgregarTelefonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AgregarTelefonoActionPerformed
         int fila = jTable1.getSelectedRow();
         if (fila == -1) {
             Estado.setText("Seleccione primero una persona.");
@@ -425,7 +506,7 @@ public class AdminAgendaGUI extends javax.swing.JFrame {
         }
 
         String idPersona = jTable1.getValueAt(fila, 0).toString();
-        String numero = NombrePersona1.getText();
+        String numero = Telefono.getText();
 
         if (numero.isEmpty()) {
             Estado.setText("Ingrese un número de teléfono.");
@@ -435,38 +516,94 @@ public class AdminAgendaGUI extends javax.swing.JFrame {
         int res = AdministradorAgenda.agregarTelefono(idPersona, numero);
         if (res == 1) {
             Estado.setText("Teléfono agregado correctamente.");
-            cargarTelefonos(idPersona); // refrescar tabla de teléfonos
-            NombrePersona1.setText(""); // limpiar campo
+            cargarTelefonos(idPersona); 
+            Telefono.setText(""); 
         } else {
             Estado.setText("No se pudo agregar el teléfono.");
         }
-    }//GEN-LAST:event_AgregarTelefono1ActionPerformed
+    }//GEN-LAST:event_AgregarTelefonoActionPerformed
 
-    private void AgregarTelefono2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AgregarTelefono2ActionPerformed
-        int fila = jTable2.getSelectedRow();
-        if (fila == -1) {
+    private void QuitarTelefonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_QuitarTelefonoActionPerformed
+        int filaTel = jTable3.getSelectedRow();
+        int filaPersona = jTable1.getSelectedRow();
+
+        if (filaTel == -1) {
             Estado.setText("Seleccione un teléfono para eliminar.");
             return;
         }
+        if (filaPersona == -1) {
+            Estado.setText("Seleccione primero una persona.");
+            return;
+        }
 
-        // Obtener ID del teléfono
-        String idTelefono = jTable2.getValueAt(fila, 0).toString(); // o columna 1 si cambiaste la tabla
-        String idPersona = jTable2.getValueAt(fila, 1).toString();  // si necesitas refrescar la tabla
+        String idTelefono = jTable3.getValueAt(filaTel, 0).toString();
+        String idPersona = jTable1.getValueAt(filaPersona, 0).toString(); // idPersona viene de la tabla de personas
 
-        // Llamar al método de baja
         int res = AdministradorAgenda.bajaTelefono(idTelefono);
         if (res == 1) {
             Estado.setText("Teléfono eliminado correctamente.");
-            NombrePersona1.setText(""); 
-            cargarTelefonos(idPersona); // refrescar tabla de teléfonos
+            Telefono.setText(""); 
+            cargarTelefonos(idPersona); 
         } else {
             Estado.setText("No se pudo eliminar el teléfono.");
         }
-    }//GEN-LAST:event_AgregarTelefono2ActionPerformed
+    }//GEN-LAST:event_QuitarTelefonoActionPerformed
 
-    private void ModificarTelefonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ModificarTelefonoActionPerformed
+    private void ModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ModificarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_ModificarTelefonoActionPerformed
+    }//GEN-LAST:event_ModificarActionPerformed
+
+    private void AgregarCalleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AgregarCalleActionPerformed
+        int fila = jTable1.getSelectedRow();
+        if (fila == -1) {
+            Estado.setText("Seleccione primero una persona.");
+            return;
+        }
+
+        String idPersona = jTable1.getValueAt(fila, 0).toString();
+
+        // Puedes usar el campo Direccion o crear uno nuevo específico para calles
+        String calle = Direccion.getText(); 
+
+        if (calle.isEmpty()) {
+            Estado.setText("Ingrese una calle/dirección.");
+            return;
+        }
+
+        int res = AdministradorAgenda.agregarDireccion(idPersona, calle);
+        if (res == 1) {
+            Estado.setText("Dirección agregada correctamente.");
+            cargarDirecciones(idPersona);
+            Direccion.setText(""); 
+        } else {
+            Estado.setText("No se pudo agregar la dirección.");
+        }
+    }//GEN-LAST:event_AgregarCalleActionPerformed
+
+    private void QuitarCalleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_QuitarCalleActionPerformed
+        int filaDir = jTable2.getSelectedRow();
+        int filaPersona = jTable1.getSelectedRow();
+
+        if (filaDir == -1) {
+            Estado.setText("Seleccione una dirección para eliminar.");
+            return;
+        }
+        if (filaPersona == -1) {
+            Estado.setText("Seleccione primero una persona.");
+            return;
+        }
+
+        String idDireccion = jTable2.getValueAt(filaDir, 0).toString();
+        String idPersona = jTable1.getValueAt(filaPersona, 0).toString();
+
+        int res = AdministradorAgenda.bajaDireccion(idDireccion);
+        if (res == 1) {
+            Estado.setText("Dirección eliminada correctamente.");
+            cargarDirecciones(idPersona);
+        } else {
+            Estado.setText("No se pudo eliminar la dirección.");
+        }
+    }//GEN-LAST:event_QuitarCalleActionPerformed
 
     /**
      * @param args the command line arguments
@@ -506,26 +643,22 @@ public class AdminAgendaGUI extends javax.swing.JFrame {
     private void cargarTablas() {
         ArrayList<Persona> personas = AdministradorAgenda.obtenerPersonas();
 
-        // ---- Tabla Personas ----
         DefaultTableModel modelPersonas = (DefaultTableModel) jTable1.getModel();
         modelPersonas.setRowCount(0);
         for (Persona p : personas) {
-            modelPersonas.addRow(new Object[]{ p.getId(), p.getNombre(), p.getDireccion() });
+            modelPersonas.addRow(new Object[]{ p.getId(), p.getNombre() });
         }
-
-        // Teléfonos se cargarán dinámicamente al seleccionar una persona
     }
     
     private void cargarTelefonos(String idPersona) {
-        DefaultTableModel modelTelefonos = (DefaultTableModel) jTable2.getModel();
-        modelTelefonos.setRowCount(0); // limpiar
+        DefaultTableModel modelTelefonos = (DefaultTableModel) jTable3.getModel();
+        modelTelefonos.setRowCount(0); 
 
         ArrayList<Persona> personas = AdministradorAgenda.obtenerPersonas();
 
         for (Persona p : personas) {
             if (p.getId().equals(idPersona)) {
                 for (Telefono t : p.getTelefonos()) {
-                    // Solo idTel y numero
                     modelTelefonos.addRow(new Object[]{ t.getIdTel(), t.getNumero() });
                 }
                 break;
@@ -533,22 +666,43 @@ public class AdminAgendaGUI extends javax.swing.JFrame {
         }
     }
 
+    private void cargarDirecciones(String idPersona) {
+        DefaultTableModel modelDirecciones = (DefaultTableModel) jTable2.getModel();
+        modelDirecciones.setRowCount(0); 
 
+        ArrayList<Persona> personas = AdministradorAgenda.obtenerPersonas();
+
+        for (Persona p : personas) {
+            if (p.getId().equals(idPersona)) {
+                for (Direccion d : p.getDirecciones()) {
+                    modelDirecciones.addRow(new Object[]{ d.getIdCalle(), d.getCalle() });
+                }
+                break;
+            }
+        }
+    }
+
+    
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton AgregarTelefono1;
-    private javax.swing.JButton AgregarTelefono2;
+    private javax.swing.JButton AgregarCalle;
+    private javax.swing.JButton AgregarTelefono;
     private javax.swing.JButton AltaPersona;
     private javax.swing.JButton BajaPersona;
-    private javax.swing.JTextField DireccionPersona;
+    private javax.swing.JTextField Direccion;
     private javax.swing.JTextField Estado;
-    private javax.swing.JButton ModificarTelefono;
-    private javax.swing.JTextField NombrePersona;
-    private javax.swing.JTextField NombrePersona1;
+    private javax.swing.JButton Modificar;
+    private javax.swing.JTextField Nombre;
+    private javax.swing.JButton QuitarCalle;
+    private javax.swing.JButton QuitarTelefono;
+    private javax.swing.JTextField Telefono;
     private javax.swing.JLabel Titulo;
     private javax.swing.JButton jButton3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
+    private javax.swing.JTable jTable3;
     // End of variables declaration//GEN-END:variables
 }
